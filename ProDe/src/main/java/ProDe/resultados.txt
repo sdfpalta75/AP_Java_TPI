@@ -1,0 +1,4 @@
+
+Equipo1; Goles1; Goles2; Equipo2
+Argentina; 1; 2; Arabia Saudita
+Polonia; 0; 0; México
