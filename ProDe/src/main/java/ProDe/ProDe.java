@@ -8,17 +8,50 @@ package ProDe;
  *
  * @author Seba
  */
+import java.io.*;
+
 public class ProDe {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException, IOException {
         
-        Partido juego1 = new Partido(new Equipo("Argentina"),new Equipo("Arabia Saudita"),1,2);
-        Partido juego2 = new Partido(new Equipo("Polonia"),new Equipo("Méjico"),0,0);
+        /* Lectura de datos desde resultados.txt */
+        FileInputStream results = new FileInputStream("resultados.txt");
+        DataInputStream Datos = new DataInputStream(results);
+        String resultados1=Datos.readLine();
+        String resultados2=Datos.readLine();
+        String resultados3=Datos.readLine();
+        results.close();
         
-        Pronostico pro1 = new Pronostico(juego1,"X"," "," ");
-        Pronostico pro2 = new Pronostico(juego2," ","X"," ");
+        /* Lectura de datos desde pronostico.txt */
+        FileInputStream pronostico = new FileInputStream("pronostico.txt");
+        DataInputStream DatosP = new DataInputStream(pronostico);
+        String pronostico1=DatosP.readLine();
+        String pronostico2=DatosP.readLine();
+        String pronostico3=DatosP.readLine();
+        pronostico.close();
         
-        int puntaje = pro1.puntos + pro2.puntos;
+        /* Discriminacion de los datos necesarios */
+        String resP1[]=resultados2.split(";");
+        String resP2[]=resultados3.split(";");
+        String proP1[]=pronostico2.split(";");
+        String proP2[]=pronostico3.split(";");
+        
+        String eq_11=resP1[0], eq_12=resP1[3], eq_21=resP2[0], eq_22=resP2[3];
+        String pr_11=proP1[1],pr_12=proP1[2],pr_13=proP1[3],pr_21=proP2[1],pr_22=proP2[2],pr_23=proP2[3];
+        
+        int gol_11=Integer.parseInt(resP1[1]);
+        int gol_12=Integer.parseInt(resP1[2]);
+        int gol_21=Integer.parseInt(resP2[1]);
+        int gol_22=Integer.parseInt(resP2[2]);
+        
+        Partido juego1 = new Partido(new Equipo(eq_11),new Equipo(eq_12),gol_11,gol_12);
+        Partido juego2 = new Partido(new Equipo(eq_21),new Equipo(eq_22),gol_21,gol_22);
+        
+        Pronostico pro1 = new Pronostico(juego1, pr_11, pr_12, pr_13);
+        Pronostico pro2 = new Pronostico(juego2, pr_21, pr_22, pr_23);
+
+        int puntaje;
+        puntaje = pro1.puntos() + pro2.puntos();
         
         System.out.println("Puntos logrados: " + puntaje);
     }
@@ -47,7 +80,7 @@ class Partido {
         this.gol2=gol2;
     }
     
-    String resultado () {
+    String resultadoJ () {
         if (this.gol1 > this.gol2)
             return "local";
         else
@@ -60,30 +93,25 @@ class Partido {
 
 class Pronostico {
     public Partido juego;
-    public String loc, emp, vis, resultado;
-    public int puntos;
+    public String loc, emp, vis;
     
     public Pronostico (Partido juego, String loc, String emp, String vis) {
         this.juego=juego;
         this.loc=loc;
         this.emp=emp;
         this.vis=vis;
-        this.puntos=this.resultado();
     }
-    
-    int resultado () {
-        if (this.loc == "X")
-            this.resultado="local";
-        else
-            if (this.emp == "X")
-                this.resultado="empate";
-            else
-                this.resultado="visita";
-        
-        if (this.juego.resultado()==this.resultado)
+
+    int puntos () {
+        if (this.loc.equals("X") && this.juego.resultadoJ().equals("local"))
             return 1;
         else
-            return 0;
+            if (this.emp.equals("X") && this.juego.resultadoJ().equals("empate"))
+                return 1;
+            else
+                if (this.vis.equals("X") && this.juego.resultadoJ().equals("visita"))
+                    return 1;
+                else
+                    return 0;
     }
-    
 }
